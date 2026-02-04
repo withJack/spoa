@@ -53,7 +53,8 @@ class SimdAlignmentEngine: public AlignmentEngine {
   Alignment Align(
       const char* sequence, std::uint32_t sequence_len,
       const Graph& graph,
-      std::int32_t* score) override;
+      std::int32_t* score,
+      bool score_only) override;
 
   friend std::unique_ptr<AlignmentEngine> CreateSimdAlignmentEngine(
       AlignmentType type,
@@ -80,19 +81,22 @@ class SimdAlignmentEngine: public AlignmentEngine {
   Alignment Linear(
       std::uint32_t sequence_len,
       const Graph& graph,
-      std::int32_t* score) noexcept;
+      std::int32_t* score,
+      bool score_only) noexcept;
 
   template<typename T>
   Alignment Affine(
       std::uint32_t sequence_len,
       const Graph& graph,
-      std::int32_t* score) noexcept;
+      std::int32_t* score,
+      bool score_only) noexcept;
 
   template<typename T>
   Alignment Convex(
       std::uint32_t sequence_len,
       const Graph& graph,
-      std::int32_t* score) noexcept;
+      std::int32_t* score,
+      bool score_only) noexcept;
 
   void Realloc(
       std::uint64_t matrix_width,

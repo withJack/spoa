@@ -649,7 +649,8 @@ template<Architecture A>
 Alignment SimdAlignmentEngine<A>::Align(
     const char* sequence, std::uint32_t sequence_len,
     const Graph& graph,
-    std::int32_t* score) {
+    std::int32_t* score,
+    bool score_only) {
   if (sequence_len > std::numeric_limits<int32_t>::max()) {
     throw std::invalid_argument(
         "[spoa::SimdAlignmentEngine::Align] error: too large sequence!");
@@ -686,9 +687,9 @@ Alignment SimdAlignmentEngine<A>::Align(
         graph.nodes().size() + 1);
 
     if (subtype_ == AlignmentSubtype::kLinear) {
-      return Linear<InstructionSet<A, std::int32_t>>(sequence_len, graph, score);  // NOLINT
+      return Linear<InstructionSet<A, std::int32_t>>(sequence_len, graph, score, score_only);  // NOLINT
     } else if (subtype_ == AlignmentSubtype::kAffine) {
-      return Affine<InstructionSet<A, std::int32_t>>(sequence_len, graph, score);  // NOLINT
+      return Affine<InstructionSet<A, std::int32_t>>(sequence_len, graph, score, score_only);  // NOLINT
     } else if (subtype_ == AlignmentSubtype::kConvex) {
       return Convex<InstructionSet<A, std::int32_t>>(sequence_len, graph, score);  // NOLINT
     }
@@ -710,11 +711,11 @@ Alignment SimdAlignmentEngine<A>::Align(
         graph.nodes().size() + 1);
 
     if (subtype_ == AlignmentSubtype::kLinear) {
-      return Linear<InstructionSet<A, std::int16_t>>(sequence_len, graph, score);  // NOLINT
+      return Linear<InstructionSet<A, std::int16_t>>(sequence_len, graph, score, score_only);  // NOLINT
     } else if (subtype_ == AlignmentSubtype::kAffine) {
-      return Affine<InstructionSet<A, std::int16_t>>(sequence_len, graph, score);  // NOLINT
+      return Affine<InstructionSet<A, std::int16_t>>(sequence_len, graph, score, score_only);  // NOLINT
     } else if (subtype_ == AlignmentSubtype::kConvex) {
-      return Convex<InstructionSet<A, std::int16_t>>(sequence_len, graph, score);  // NOLINT
+      return Convex<InstructionSet<A, std::int16_t>>(sequence_len, graph, score, score_only);  // NOLINT
     }
   }
 
@@ -728,7 +729,8 @@ template<Architecture A> template <typename T>
 Alignment SimdAlignmentEngine<A>::Linear(
     std::uint32_t sequence_len,
     const Graph& graph,
-    std::int32_t* score) noexcept {
+    std::int32_t* score,
+    bool score_only) noexcept {
 #if defined(__AVX2__) || defined(__SSE4_1__) || defined(SPOA_USE_SIMDE)
   std::uint64_t normal_matrix_width = sequence_len;
   std::uint64_t matrix_width =
@@ -878,6 +880,12 @@ Alignment SimdAlignmentEngine<A>::Linear(
   if (score) {
     *score = max_score;
   }
+
+  // --- quick fix ---
+  if (score_only) {
+    return Alignment();
+  }
+  // --- quick fix ---
 
   if (type_ == AlignmentType::kSW) {
     max_j = _mmxxx_index_of<A, T>(
@@ -1077,7 +1085,8 @@ template<Architecture A> template <typename T>
 Alignment SimdAlignmentEngine<A>::Affine(
     std::uint32_t sequence_len,
     const Graph& graph,
-    std::int32_t* score) noexcept {
+    std::int32_t* score,
+    bool score_only) noexcept {
 #if defined(__AVX2__) || defined(__SSE4_1__) || defined(SPOA_USE_SIMDE)
   std::uint64_t normal_matrix_width = sequence_len;
   std::uint64_t matrix_width =
@@ -1244,6 +1253,12 @@ Alignment SimdAlignmentEngine<A>::Affine(
   if (score) {
     *score = max_score;
   }
+
+  // --- quick fix ---
+  if (score_only) {
+    return Alignment();
+  }
+  // --- quick fix ---
 
   if (type_ == AlignmentType::kSW) {
     max_j = _mmxxx_index_of<A, T>(
@@ -1522,7 +1537,8 @@ template<Architecture A> template <typename T>
 Alignment SimdAlignmentEngine<A>::Convex(
     std::uint32_t sequence_len,
     const Graph& graph,
-    std::int32_t* score) noexcept {
+    std::int32_t* score,
+    bool score_only) noexcept {
 #if defined(__AVX2__) || defined(__SSE4_1__) || defined(SPOA_USE_SIMDE)
   std::uint64_t normal_matrix_width = sequence_len;
   std::uint64_t matrix_width =
@@ -1741,6 +1757,12 @@ Alignment SimdAlignmentEngine<A>::Convex(
   if (score) {
     *score = max_score;
   }
+
+  // --- quick fix ---
+  if (score_only) {
+    return Alignment();
+  }
+  // --- quick fix ---
 
   if (type_ == AlignmentType::kSW) {
     max_j = _mmxxx_index_of<A, T>(

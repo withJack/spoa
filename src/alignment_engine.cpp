@@ -94,8 +94,9 @@ AlignmentEngine::AlignmentEngine(
 Alignment AlignmentEngine::Align(
     const std::string& sequence,
     const Graph& graph,
-    std::int32_t* score) {
-  return Align(sequence.c_str(), sequence.size(), graph, score);
+    std::int32_t* score, 
+    bool score_only) {
+  return Align(sequence.c_str(), sequence.size(), graph, score, score_only);
 }
 
 std::int64_t AlignmentEngine::WorstCaseAlignmentScore(

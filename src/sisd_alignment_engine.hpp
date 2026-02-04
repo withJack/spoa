@@ -39,7 +39,8 @@ class SisdAlignmentEngine: public AlignmentEngine {
   Alignment Align(
       const char* sequence, std::uint32_t sequence_len,
       const Graph& graph,
-      std::int32_t* score) override;
+      std::int32_t* score,
+      bool score_only) override;
 
  private:
   SisdAlignmentEngine(
@@ -55,17 +56,20 @@ class SisdAlignmentEngine: public AlignmentEngine {
   Alignment Linear(
       std::uint32_t sequence_len,
       const Graph& graph,
-      std::int32_t* score) noexcept;
+      std::int32_t* score,
+      bool score_only) noexcept;
 
   Alignment Affine(
       std::uint32_t sequence_len,
       const Graph& graph,
-      std::int32_t* score) noexcept;
+      std::int32_t* score,
+      bool score_only) noexcept;
 
   Alignment Convex(
       std::uint32_t sequence_len,
       const Graph& graph,
-      std::int32_t* score) noexcept;
+      std::int32_t* score,
+      bool score_only) noexcept;
 
   void Realloc(
       std::uint64_t matrix_width,

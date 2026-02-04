@@ -61,12 +61,14 @@ class AlignmentEngine {
   Alignment Align(
       const std::string& sequence,
       const Graph& graph,
-      std::int32_t* score = nullptr);
+      std::int32_t* score = nullptr,
+      bool score_only = false);
 
   virtual Alignment Align(
       const char* sequence, std::uint32_t sequence_len,
       const Graph& graph,
-      std::int32_t* score = nullptr) = 0;
+      std::int32_t* score = nullptr,
+      bool score_only = false) = 0;
 
  protected:
   AlignmentEngine(

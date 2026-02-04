@@ -259,7 +259,8 @@ void SisdAlignmentEngine::Initialize(
 Alignment SisdAlignmentEngine::Align(
     const char* sequence, std::uint32_t sequence_len,
     const Graph& graph,
-    std::int32_t* score) {
+    std::int32_t* score,
+    bool score_only) {
   if (sequence_len > std::numeric_limits<int32_t>::max()) {
     throw std::invalid_argument(
         "[spoa::SisdAlignmentEngine::Align] error: too large sequence!");
@@ -283,11 +284,11 @@ Alignment SisdAlignmentEngine::Align(
   Initialize(sequence, sequence_len, graph);
 
   if (subtype_ == AlignmentSubtype::kLinear) {
-    return Linear(sequence_len, graph, score);
+    return Linear(sequence_len, graph, score, score_only);
   } else if (subtype_ == AlignmentSubtype::kAffine) {
-    return Affine(sequence_len, graph, score);
+    return Affine(sequence_len, graph, score, score_only);
   } else if (subtype_ == AlignmentSubtype::kConvex) {
-    return Convex(sequence_len, graph, score);
+    return Convex(sequence_len, graph, score, score_only);
   }
   return Alignment();
 }
@@ -295,7 +296,8 @@ Alignment SisdAlignmentEngine::Align(
 Alignment SisdAlignmentEngine::Linear(
     std::uint32_t sequence_len,
     const Graph& graph,
-    std::int32_t* score) noexcept {
+    std::int32_t* score,
+    bool score_only) noexcept {
   std::uint64_t matrix_width = sequence_len + 1;
   const auto& rank_to_node = graph.rank_to_node();
 
@@ -368,6 +370,12 @@ Alignment SisdAlignmentEngine::Linear(
   if (score) {
     *score = max_score;
   }
+
+  // --- quick fix ---
+  if (score_only) {
+    return Alignment();
+  }
+  // --- quick fix ---
 
   // backtrack
   Alignment alignment;
@@ -465,7 +473,8 @@ Alignment SisdAlignmentEngine::Linear(
 Alignment SisdAlignmentEngine::Affine(
     std::uint32_t sequence_len,
     const Graph& graph,
-    std::int32_t* score) noexcept {
+    std::int32_t* score,
+    bool score_only) noexcept {
   std::uint64_t matrix_width = sequence_len + 1;
   const auto& rank_to_node = graph.rank_to_node();
 
@@ -549,6 +558,12 @@ Alignment SisdAlignmentEngine::Affine(
   if (score) {
     *score = max_score;
   }
+
+  // --- quick fix ---
+  if (score_only) {
+    return Alignment();
+  }
+  // --- quick fix ---
 
   // backtrack
   Alignment alignment;
@@ -681,7 +696,8 @@ Alignment SisdAlignmentEngine::Affine(
 Alignment SisdAlignmentEngine::Convex(
     std::uint32_t sequence_len,
     const Graph& graph,
-    std::int32_t* score) noexcept {
+    std::int32_t* score,
+    bool score_only) noexcept {
   std::uint64_t matrix_width = sequence_len + 1;
   const auto& rank_to_node = graph.rank_to_node();
 
@@ -777,6 +793,12 @@ Alignment SisdAlignmentEngine::Convex(
   if (score) {
     *score = max_score;
   }
+
+  // --- quick fix ---
+  if (score_only) {
+    return Alignment();
+  }
+  // --- quick fix ---
 
   // backtrack
   Alignment alignment;
