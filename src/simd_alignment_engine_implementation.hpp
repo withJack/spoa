@@ -691,7 +691,7 @@ Alignment SimdAlignmentEngine<A>::Align(
     } else if (subtype_ == AlignmentSubtype::kAffine) {
       return Affine<InstructionSet<A, std::int32_t>>(sequence_len, graph, score, score_only);  // NOLINT
     } else if (subtype_ == AlignmentSubtype::kConvex) {
-      return Convex<InstructionSet<A, std::int32_t>>(sequence_len, graph, score);  // NOLINT
+      return Convex<InstructionSet<A, std::int32_t>>(sequence_len, graph, score, score_only);  // NOLINT
     }
   } else {
     try {
